@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<script type="text/javascript" src="/lib/jquery.js"></script>
+		<script type="text/javascript" src="/lib/qunit.js"></script>
+		<link rel="stylesheet" href="/lib/qunit.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="/composable.js"></script>
+	
+		<script>
+			$(document).ready(function(){
+				
+				test("Test Composable.factory with no context", function() {
+					
+					var widget = function(specs, context) { return {}; };
+					
+					raises(function() {
+						Composable.factory.def(widget).create();
+					});
+					
+				});
+				
+				test("Test Composable.factory context.data", function() {
+				
+					var widget = function(specs, context) {
+						return {};
+					};
+					
+					var context = {data: {prop: "PROP"}};
+					var widget = Composable.factory.def(widget).create(context);
+					deepEqual(context.data, {prop: "PROP"});
+					
+				});
+				
+				test("Test Composable.factory context.target", function() {
+				
+					var widget = function(specs, context) {
+						return {
+							prop: "PROP",
+							func: function() {return "FUNC"},
+							obj: {obj: "OBJ"}
+						};
+					};
+					
+					var context = {};
+					var widget = Composable.factory.def(widget).create(context);
+					deepEqual(context.target, widget);
+				});
+				
+				test("Test Composable.factory context.factory", function() {
+				
+					var widget = function(specs, context) {
+						return {
+							prop: "PROP",
+							obj: {obj: "OBJ"}
+						};
+					};
+					
+					var context = {data: {prop: "PROP"}};
+					var widget = Composable.factory.def(widget).create(context);
+					var copy = context.factory(context)
+					deepEqual(copy, widget);
+					
+				});
+		
+			});
+		</script>
+	
+	</head>
+	<body>
+		<h1 id="qunit-header">Factory Tests</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture"></div>
+	</body>
+	
+</html>

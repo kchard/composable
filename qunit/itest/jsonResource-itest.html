@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<script type="text/javascript" src="/lib/jquery.js"></script>
+		<script type="text/javascript" src="/lib/qunit.js"></script>
+		<link rel="stylesheet" href="/lib/qunit.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="/composable.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+    
+				test("Test Composable.resource fetch collection", function() {
+					var resource = Composable.resource.def({baseUrl: "http://127.0.0.1/itest"});
+					var aResource = resource.create({});
+					aResource.fetch(function(data) {
+						test("Test Composable.resource fetch collection assert", function() {
+							strictEqual(data.result, "GET /itest");
+						});
+					}, function(jqHXR, message) {
+						test("Test Composable.resource fetch collection assert", function() {
+							ok(false, message);
+						});
+					});
+					ok(true);
+				});
+				
+				test("Test Composable.resource fetch item", function() {
+					var resource = Composable.resource.def({baseUrl: "http://127.0.0.1/itest"});
+					var aResource = resource.create({data: {id: 1}});
+					aResource.fetch(function(data) {
+						test("Test Composable.resource fetch item assert", function() {
+							strictEqual(data.result, "GET /itest/1");
+						});
+					}, function(jqHXR, message) {
+						test("Test Composable.resource fetch item assert", function() {
+							ok(false, message);
+						});
+					});
+					ok(true);
+				});
+				
+				test("Test Composable.resource create item", function() {
+					var resource = Composable.resource.def({baseUrl: "http://127.0.0.1/itest"});
+					var aResource = resource.create({});
+					aResource.save(function(data) {
+						test("Test Composable.resource create item assert", function() {
+							strictEqual(data.result, "POST /itest");
+						});
+					}, function(jqHXR, message) {
+						test("Test Composable.resource create item", function() {
+							ok(false, message);
+						});
+					});
+					ok(true);
+				});
+				
+				test("Test Composable.resource update item", function() {
+					var resource = Composable.resource.def({baseUrl: "http://127.0.0.1/itest"});
+					var aResource = resource.create({data: {id: 1}});
+					aResource.save(function(data) {
+						test("Test Composable.resource update item assert", function() {
+							strictEqual(data.result, "PUT /itest/1");
+						});
+					}, function(jqHXR, message) {
+						test("Test Composable.resource update item", function() {
+							ok(false, message);
+						});
+					});
+					ok(true);
+				});
+				
+				test("Test Composable.resource destroy collection", function() {
+					var resource = Composable.resource.def({baseUrl: "http://127.0.0.1/itest"});
+					var aResource = resource.create({});
+					aResource.destroy(function(data) {
+						test("Test Composable.resource destroy collection assert", function() {
+							strictEqual(data.result, "DELETE /itest");
+						});
+					}, function(jqHXR, message) {
+						test("Test Composable.resource destroy collection", function() {
+							ok(false, message);
+						});
+					});
+					ok(true);
+				});
+				
+				test("Test Composable.resource destroy item", function() {
+					var resource = Composable.resource.def({baseUrl: "http://127.0.0.1/itest"});
+					var aResource = resource.create({data: {id: 1}});
+					aResource.destroy(function(data) {
+						test("Test Composable.resource destroy item assert", function() {
+							strictEqual(data.result, "DELETE /itest/1");
+						});
+					}, function(jqHXR, message) {
+						test("Test Composable.resource destroy item", function() {
+							ok(false, message);
+						});
+					});
+					ok(true);
+				});
+			});
+		</script>
+	
+	</head>
+	<body>
+		<h1 id="qunit-header">Resource Integration Tests</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture"></div>
+	</body>
+	
+</html>

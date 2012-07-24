@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<script type="text/javascript" src="/lib/jquery.js"></script>
+		<script type="text/javascript" src="/lib/qunit.js"></script>
+		<link rel="stylesheet" href="/lib/qunit.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="/composable.js"></script>
+	
+		<script>
+			$(document).ready(function(){
+				
+				test("Test Composable.factory and compose", function() {
+					var widget1 = function(specs, context) {
+						return {
+							prop1: "ONE"
+						};
+					};
+					
+					var widget2 = function(specs, context) {
+						return {
+							prop2: "TWO"
+						};
+					};
+					
+					var widget1Factory = Composable.factory.def(widget1, {});
+					var widget2Factory = Composable.factory.def(widget2, {});
+					
+					var compositeFactory = widget1Factory.and(widget2Factory);
+					var compositeWidget = compositeFactory.create({});
+					strictEqual(compositeWidget.prop1, "ONE");
+					strictEqual(compositeWidget.prop2, "TWO");
+					
+				});
+				
+				test("Test Composable.composite context.data", function() {
+					var widget1 = function(specs, context) {
+						return {
+							prop1: "ONE"
+						};
+					};
+					
+					var widget2 = function(specs, context) {
+						return {
+							prop2: "TWO"
+						};
+					};
+					
+					var widget1Factory = Composable.factory.def(widget1, {});
+					var widget2Factory = Composable.factory.def(widget2, {});
+					
+					var compositeFactory = widget1Factory.and(widget2Factory);
+					
+					var context = {data: {prop: "PROP"}};
+					var compositeWidget = compositeFactory.create(context);
+					deepEqual(context.data, {prop: "PROP"});
+				});
+				
+				test("Test Composable.composite context.target", function() {
+					var widget1 = function(specs, context) {
+						return {
+							prop1: "ONE"
+						};
+					};
+					
+					var widget2 = function(specs, context) {
+						return {
+							prop2: "TWO"
+						};
+					};
+					
+					var widget1Factory = Composable.factory.def(widget1, {});
+					var widget2Factory = Composable.factory.def(widget2, {});
+					
+					var compositeFactory = widget1Factory.and(widget2Factory);
+					
+					var context = {data: {prop: "PROP"}};
+					var compositeWidget = compositeFactory.create(context);
+					deepEqual(context.target, compositeWidget);
+				});
+				
+				test("Test Composable.composite context.factory", function() {
+					var widget1 = function(specs, context) {
+						return {
+							prop1: "ONE"
+						};
+					};
+					
+					var widget2 = function(specs, context) {
+						return {
+							prop2: "TWO"
+						};
+					};
+					
+					var widget1Factory = Composable.factory.def(widget1, {});
+					var widget2Factory = Composable.factory.def(widget2, {});
+					
+					var compositeFactory = widget1Factory.and(widget2Factory);
+					
+					var context = {data: {prop: "PROP"}};
+					var compositeWidget1 = compositeFactory.create(context);
+					var compositeWidget2 = context.factory(context);
+					deepEqual(compositeWidget2, compositeWidget1);
+				});
+			
+				test("Test Composable.composite of composite", function() {
+					var widget1 = function(specs, context) {
+						return {
+							prop1: "ONE"
+						};
+					};
+					
+					var widget2 = function(specs, context) {
+						return {
+							prop2: "TWO"
+						};
+					};
+					var widget3 = function(specs, context) {
+						return {
+							prop3: "THREE"
+						};
+					};
+					
+					var widget1Factory = Composable.factory.def(widget1, {});
+					var widget2Factory = Composable.factory.def(widget2, {});
+					var widget3Factory = Composable.factory.def(widget3, {});
+					
+					var compositeFactory = widget1Factory.and(widget2Factory);
+					var compositeCompositeFactory = compositeFactory.and(widget3Factory);
+					
+					var compositeWidget = compositeCompositeFactory.create({});
+					strictEqual(compositeWidget.prop1, "ONE");
+					strictEqual(compositeWidget.prop2, "TWO");
+					strictEqual(compositeWidget.prop3, "THREE");
+					
+				});
+			
+			});
+		</script>
+	
+	</head>
+	<body>
+		<h1 id="qunit-header">Composite Tests</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture"></div>
+	</body>
+	
+</html>

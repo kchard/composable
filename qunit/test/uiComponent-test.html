@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<script type="text/javascript" src="/lib/jquery.js"></script>
+		<script type="text/javascript" src="/lib/qunit.js"></script>
+		<link rel="stylesheet" href="/lib/qunit.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="/composable.js"></script>
+	
+		<script>
+			$(document).ready(function(){
+				
+				test("Test uiComponent.def refresh with no factories", function() {
+					
+					var component = Composable.def().create({});
+					ok(component.refresh);
+					component.refresh();
+				});
+				
+				test("Test uiComponent.def refresh with modelFactory", function() {
+					
+					var modelFactory = Composable.model.def();
+				
+					var component = Composable.def(modelFactory).create({data: {prop: "INITIAL DATA"}});
+					ok(component.refresh);
+					component.refresh(function() {
+						test("Test fetch is not executed", function() {
+							deepEqual(component.get("prop"), "INITIAL DATA");
+						});
+					});
+				});
+				
+				test("Test uiComponent.def refresh with resourceFactory", function() {
+					
+					var resourceFactory = Composable.resource.def();
+				
+					var component = Composable.def(resourceFactory).create({});
+					ok(component.refresh);
+					component.refresh(function() {
+						test("Test fetch is successfully executed", function() {
+							deepEqual(component.getData(), {"result": "GET /"});
+						});
+						
+					});
+				});
+				
+				test("Test uiComponent.def refresh with modelFactory and resourceFactory", function() {
+					
+					var modelFactory = Composable.model.def();
+					var resourceFactory = Composable.resource.def();
+				
+					var component = Composable.def(modelFactory).and(resourceFactory).create({data: {prop: "INITIAL DATA"}});
+					ok(component.refresh);
+					component.refresh(function() {
+						test("Test fetch is successfully executed and data is overwritten", function() {
+							deepEqual(component.getData(), {"result": "GET /"});
+							deepEqual(component.get("prop"), undefined);
+						});
+						
+					});
+				});
+				
+				test("Test uiComponent.def refresh with modelFactory with viewFactory", function() {
+					
+					var render = function(model) {
+						model.rendered = true;
+					};
+					
+					var modelFactory = Composable.model.def();
+					var viewFactory = Composable.view.def({render: render})
+					
+					var context = {data: {prop: "INITIAL DATA"}};
+					var component = Composable.def(modelFactory).withView(viewFactory).create(context);
+					ok(component.refresh);
+					component.refresh(function() {
+						test("Test render is called with no resourceFactory", function() {
+							ok(context.target.rendered);
+						});
+						
+					});
+				});
+				
+				test("Test uiComponent.def refresh with modelFactory and resourceFactory with viewFactory", function() {
+					
+					var render = function(model) {
+						model.rendered = true;
+					};
+					
+					var modelFactory = Composable.model.def();
+					var resourceFactory = Composable.resource.def();
+					var viewFactory = Composable.view.def({render: render})
+					
+					var context = {data: {prop: "INITIAL DATA"}};
+					var component = Composable.def(modelFactory).and(resourceFactory).withView(viewFactory).create(context);
+					ok(component.refresh);
+					component.refresh(function() {
+						test("Test render is called with resourceFactory", function() {
+							ok(context.target.rendered);
+						});
+						
+					});
+				});
+			});
+		</script>
+	
+	</head>
+	<body>
+		<h1 id="qunit-header">Model Tests</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture"></div>
+	</body>
+	
+</html>

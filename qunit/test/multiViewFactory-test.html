@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<script type="text/javascript" src="/lib/jquery.js"></script>
+		<script type="text/javascript" src="/lib/qunit.js"></script>
+		<link rel="stylesheet" href="/lib/qunit.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="/composable.js"></script>
+	
+		<script>
+			$(document).ready(function(){
+				
+				test("Test Composable.multiViewFactory.def with view", function() {
+					
+					var render = function(model) {
+						model.rendered = true;
+					};
+					
+					var viewFactory = Composable.view.def({render: render});
+					
+					var widget = function(specs, context) { return {prop: "PROP"}; };
+					var multiViewFactory = Composable.multiViewFactory.def(widget, {});
+					
+					var context = {};
+					var widgetWithView = multiViewFactory.withView(viewFactory).create(context);
+					
+					strictEqual(widgetWithView.prop, "PROP");
+					ok(widgetWithView.render);
+					
+					widgetWithView.render();
+					ok(context.target.rendered);
+				});
+				
+				test("Test Composable.multiViewFactory.def with two components and with two view", function() {
+					
+					var render1 = function(model) {
+						model.rendered1 = true;
+					};
+					
+					var render2 = function(model) {
+						model.rendered2 = true;
+					};
+					
+					var viewFactory1 = Composable.view.def({render: render1});
+					var viewFactory2 = Composable.view.def({render: render2});
+					
+					var widget1 = function(specs, context) { return {prop1: "PROP1"}; };
+					var widget2 = function(specs, context) { return {prop2: "PROP2"}; };
+					var multiViewFactory = Composable.multiViewFactory.def(widget1, {})
+																	  .and(Composable.factory.def(widget2, {}))
+																	  .withView(viewFactory1)
+																	  .withView(viewFactory2);
+					
+					var context = {};
+					var widgetWithViews = multiViewFactory.create(context);
+					
+					strictEqual(widgetWithViews.prop1, "PROP1");
+					strictEqual(widgetWithViews.prop2, "PROP2");
+					ok(widgetWithViews.render);
+					
+					widgetWithViews.render();
+					ok(context.target.rendered1);
+					ok(context.target.rendered2);
+				});
+
+			});
+		</script>
+	
+	</head>
+	<body>
+		<h1 id="qunit-header">Model Tests</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture"></div>
+	</body>
+	
+</html>
